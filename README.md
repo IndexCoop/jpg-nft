@@ -10,3 +10,8 @@ Contract is based on ERC721A which makes batch minting cheaper than the standard
 - Clone the repository
 - In the repo, run `forge install`
 - Then run `forge test`
+
+## Some notable features
+- Support for [EIP-2981](https://eips.ethereum.org/EIPS/eip-2981) - NFT royalty standard
+    - 5% royalty on secondary sales.
+- Minting and baseURI setting is restriced to the Contract owner.
