@@ -73,4 +73,25 @@ contract ContractTest is DSTest {
         testMint();
         cheats.stopPrank();
     }
+
+    function testTransfer() public {
+        coll.mintBatch(1);
+
+        address receiver = generateAddress("receiver");
+        coll.transferFrom(address(this), receiver, 0);
+
+        assertEq(coll.ownerOf(0), receiver);
+    }
+
+    function testRoyalty() public {
+        (address owner, uint256 cut) = coll.royaltyInfo(0, 100);
+        assertEq(coll.owner(), owner);
+        assertEq(5, cut);
+
+        (, cut) = coll.royaltyInfo(0, 101);
+        assertEq(5, cut);
+
+        (, cut) = coll.royaltyInfo(0, 1e18);
+        assertEq(5e16, cut);
+    }
 }
