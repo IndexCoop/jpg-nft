@@ -8,7 +8,6 @@ import {IERC2981} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 contract Collectors is ERC721A, Ownable, IERC2981 {
     using Strings for uint256;
 
-    uint256 public immutable royaltyShare = 5e16; // 5%
     string private _baseTokenURI;
 
     constructor() ERC721A("Collectooors", "COLLECTOOORS") {}
@@ -46,7 +45,7 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
         view
         returns (address, uint256) {
 
-        uint256 royaltyAmount = salePrice * royaltyShare / 1e18;
+        uint256 royaltyAmount = salePrice * 5e16 / 1e18; // 5% royalty
         return (owner(), royaltyAmount);
     }
 
