@@ -18,7 +18,10 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
         _baseTokenURI = baseURI;
     }
 
-    // @notice no `safeMint` allowed implying it doesn't call `onERC721Received` on the minter.
+    /**
+     * @notice no `safeMint` allowed implying it doesn't call `onERC721Received` on the minter.
+     * @param quantity number of tokens to mint, all owned by the `owner`.
+     */
     function mintBatch(uint256 quantity) external onlyOwner {
         _mint(msg.sender, quantity, "", false);
     }
@@ -40,6 +43,13 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
 
     ///////// VIEW FUNCTIONS ///////////
 
+    /**
+     * @notice ERC2981 NFT royalty standard. 5% royalty on secondary sales.
+     * @param
+     * @param salePrice sale amount.
+     * @return recipient address that should receive the royalty.
+     * @return royalty amount from `salePrice` that `recipient` should receive.
+     */
     function royaltyInfo(uint256 /* tokenId */, uint256 salePrice) // TODO: check if ERC165 support is needed
         external
         view
@@ -57,7 +67,7 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
     }
 
     ////////// INTERNAL FUNCTIONS //////////
-      function _baseURI() internal view virtual override returns (string memory) {
+    function _baseURI() internal view virtual override returns (string memory) {
         return _baseTokenURI;
     }
 
