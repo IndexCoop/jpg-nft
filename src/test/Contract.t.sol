@@ -83,6 +83,28 @@ contract ContractTest is DSTest {
         assertEq(coll.ownerOf(0), receiver);
     }
 
+    function testTransferBatch() public {
+        coll.mintBatch(42);
+
+        address[] memory receivers = new address[](40);
+        for (uint i=0; i<40; ++i) {
+            receivers[i] = generateAddress(bytes(i.toString()));
+        }
+
+        coll.transferBatch(1, receivers);
+
+        assertEq(coll.ownerOf(0), address(this));
+
+        for (uint i=0; i<40; ++i) {
+            assertEq(coll.ownerOf(i+1), receivers[i]);
+        }
+
+        assertEq(coll.ownerOf(41), address(this));
+
+        coll.mintBatch(40);
+        coll.transferBatch(0, receivers);
+    }
+
     function testRoyalty() public {
         (address owner, uint256 cut) = coll.royaltyInfo(0, 100);
         assertEq(coll.owner(), owner);

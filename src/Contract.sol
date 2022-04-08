@@ -26,13 +26,16 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
 
     /**
      * @notice transfer tokens starting from `_startIndex` to addresses in `receivers`.
+     *         provides an easier way to transfer tokens to multiple addresses.
      * @param _startId transfer tokens starting from this number, incrementing by 1 each time.
      * @param receivers addresses of receivers. `receivers[i]` receives the token `_startId+i`.
      * @dev no additional revert checks are performed. it's assumed the `owner` passes correct arguments.
      */
     function transferBatch(uint256 _startId, address[] calldata receivers) external onlyOwner {
-        for (uint i; i<receivers.length; ++i) {
-            transferFrom(owner(), receivers[i], _startId+i);
+        unchecked {
+            for (uint i; i<receivers.length; ++i) {
+                transferFrom(owner(), receivers[i], _startId+i);
+            }
         }
     }
 
@@ -43,7 +46,7 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
         view
         returns (address, uint256) {
 
-        uint256 royaltyAmount = salePrice * royaltyShare / 1e18; // TODO: check for correctness
+        uint256 royaltyAmount = salePrice * royaltyShare / 1e18;
         return (owner(), royaltyAmount);
     }
 
