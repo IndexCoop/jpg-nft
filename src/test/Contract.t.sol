@@ -18,7 +18,7 @@ contract ContractTest is DSTest {
 
     using Strings for uint256;
     Collectors coll;
-    string _baseURI = "ipfs://QmPwu1Z6WVckrCiRcAoXr4AL5SVMivJVUfHw7qqSNUtYR";
+    string _baseURI = "ipfs://QmPwu1Z6WVckrCiRcAoXr4AL5SVMivJVUfHw7qqSNUtYRa";
 
     function generateAddress(bytes memory str) internal pure returns (address) {
         return address(bytes20(keccak256(str)));
@@ -41,7 +41,7 @@ contract ContractTest is DSTest {
         assertEq(coll.totalSupply(), 1);
 
         coll.setBaseURI(_baseURI);
-        assertEq(coll.tokenURI(0), "ipfs://QmPwu1Z6WVckrCiRcAoXr4AL5SVMivJVUfHw7qqSNUtYR/0.json");
+        assertEq(coll.tokenURI(0), "ipfs://QmPwu1Z6WVckrCiRcAoXr4AL5SVMivJVUfHw7qqSNUtYRa/0.json");
 
         cheats.expectRevert(abi.encodeWithSelector(URIQueryForNonexistentToken.selector));
         coll.tokenURI(1);
@@ -49,7 +49,7 @@ contract ContractTest is DSTest {
         coll.mintBatch(50);
         assertEq(coll.totalSupply(), 51);
 
-        assertEq(coll.tokenURI(50), "ipfs://QmPwu1Z6WVckrCiRcAoXr4AL5SVMivJVUfHw7qqSNUtYR/50.json");
+        assertEq(coll.tokenURI(50), "ipfs://QmPwu1Z6WVckrCiRcAoXr4AL5SVMivJVUfHw7qqSNUtYRa/50.json");
 
         cheats.expectRevert(abi.encodeWithSelector(URIQueryForNonexistentToken.selector));
         coll.tokenURI(51);
@@ -91,7 +91,7 @@ contract ContractTest is DSTest {
             receivers[i] = generateAddress(bytes(i.toString()));
         }
 
-        coll.transferBatch(1, receivers);
+        coll.transferToMultiple(1, receivers);
 
         assertEq(coll.ownerOf(0), address(this));
 
@@ -100,9 +100,6 @@ contract ContractTest is DSTest {
         }
 
         assertEq(coll.ownerOf(41), address(this));
-
-        coll.mintBatch(40);
-        coll.transferBatch(0, receivers);
     }
 
     function testRoyalty() public {

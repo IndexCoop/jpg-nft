@@ -15,4 +15,4 @@ Contract is based on ERC721A which makes batch minting cheaper than the standard
 - Support for [EIP-2981](https://eips.ethereum.org/EIPS/eip-2981) - NFT royalty standard
     - 5% royalty on secondary sales.
 - `mintBatch(uint)` function to mint multiple NFTs to owners.
-- `transferBatch()` function to transfer muliple NFTs to different addresses.
+- `transferToMultiple()` function to transfer muliple NFTs to different addresses; can be called by anyone.

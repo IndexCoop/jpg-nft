@@ -12,6 +12,20 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
 
     constructor() ERC721A("Collectooors", "COLLECTOOORS") {}
 
+    /**
+     * @notice transfer tokens starting from `_startIndex` to addresses in `receivers`.
+     *         provides an easier way to transfer tokens to multiple addresses.
+     * @param _startId transfer tokens starting from this number, incrementing by 1 each time.
+     * @param receivers addresses of receivers. `receivers[i]` receives the token `_startId+i`.
+     * @dev the tokenId to transfer can overflow, but it has to be a impractical high number.
+     */
+    function transferToMultiple(uint256 _startId, address[] calldata receivers) external {
+        unchecked {
+            for (uint i; i<receivers.length; ++i) {
+                transferFrom(msg.sender, receivers[i], _startId+i);
+            }
+        }
+    }
 
     ///////// ONLY OWNER FUNCTIONS ////////
     function setBaseURI(string calldata baseURI) external onlyOwner {
@@ -24,21 +38,6 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
      */
     function mintBatch(uint256 quantity) external onlyOwner {
         _mint(msg.sender, quantity, "", false);
-    }
-
-    /**
-     * @notice transfer tokens starting from `_startIndex` to addresses in `receivers`.
-     *         provides an easier way to transfer tokens to multiple addresses.
-     * @param _startId transfer tokens starting from this number, incrementing by 1 each time.
-     * @param receivers addresses of receivers. `receivers[i]` receives the token `_startId+i`.
-     * @dev no additional revert checks are performed. it's assumed the `owner` passes correct arguments.
-     */
-    function transferBatch(uint256 _startId, address[] calldata receivers) external onlyOwner {
-        unchecked {
-            for (uint i; i<receivers.length; ++i) {
-                transferFrom(owner(), receivers[i], _startId+i);
-            }
-        }
     }
 
     ///////// VIEW FUNCTIONS ///////////
