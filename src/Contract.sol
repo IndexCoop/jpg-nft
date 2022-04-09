@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.4;
 
-import {ERC721A, URIQueryForNonexistentToken, Strings} from "erc721a/contracts/ERC721A.sol";
+import {ERC721A, URIQueryForNonexistentToken, Strings, IERC165} from "erc721a/contracts/ERC721A.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC2981} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
+
 
 contract Collectors is ERC721A, Ownable, IERC2981 {
     using Strings for uint256;
@@ -63,6 +64,15 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
 
         string memory baseURI = _baseURI();
         return bytes(baseURI).length != 0 ? string(abi.encodePacked(baseURI, "/", tokenId.toString(), ".json")) : '';
+    }
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721A, IERC165) returns (bool) {
+        return
+            interfaceId == type(IERC2981).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
     ////////// INTERNAL FUNCTIONS //////////

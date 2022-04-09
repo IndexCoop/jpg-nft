@@ -3,6 +3,7 @@ pragma solidity ^0.8.4;
 
 import "ds-test/test.sol";
 import {Collectors, URIQueryForNonexistentToken} from  "../Contract.sol";
+import {IERC721, IERC721Metadata} from "erc721a/contracts/ERC721A.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 interface CheatCodes {
@@ -19,6 +20,7 @@ contract ContractTest is DSTest {
     using Strings for uint256;
     Collectors coll;
     string _baseURI = "ipfs://QmPwu1Z6WVckrCiRcAoXr4AL5SVMivJVUfHw7qqSNUtYRa";
+    bytes4 _INTERFACE_ID_ERC2981 = 0x2a55205a;
 
     function generateAddress(bytes memory str) internal pure returns (address) {
         return address(bytes20(keccak256(str)));
@@ -83,26 +85,29 @@ contract ContractTest is DSTest {
         assertEq(coll.ownerOf(0), receiver);
     }
 
-    function testTransferBatch() public {
-        coll.mintBatch(42);
+    function testTransferToMultiple() public {
+        coll.mintBatch(12);
 
-        address[] memory receivers = new address[](40);
-        for (uint i=0; i<40; ++i) {
+        address[] memory receivers = new address[](10);
+        for (uint i=0; i<10; ++i) {
             receivers[i] = generateAddress(bytes(i.toString()));
         }
 
+        // transfer [1,10] tokens
         coll.transferToMultiple(1, receivers);
 
         assertEq(coll.ownerOf(0), address(this));
 
-        for (uint i=0; i<40; ++i) {
+        for (uint i=0; i<10; ++i) {
             assertEq(coll.ownerOf(i+1), receivers[i]);
         }
 
-        assertEq(coll.ownerOf(41), address(this));
+        assertEq(coll.ownerOf(11), address(this));
     }
 
     function testRoyalty() public {
+        assertTrue(coll.supportsInterface(_INTERFACE_ID_ERC2981));
+
         (address owner, uint256 cut) = coll.royaltyInfo(0, 100);
         assertEq(coll.owner(), owner);
         assertEq(5, cut);
@@ -112,5 +117,14 @@ contract ContractTest is DSTest {
 
         (, cut) = coll.royaltyInfo(0, 1e18);
         assertEq(5e16, cut);
+    }
+
+    function testSupportInterface() public {
+        assertTrue(coll.supportsInterface(_INTERFACE_ID_ERC2981));
+        assertTrue(coll.supportsInterface(type(IERC721).interfaceId));
+        assertTrue(coll.supportsInterface(type(IERC721Metadata).interfaceId));
+
+        // should return false for arbitrary bytes
+        assertTrue(!coll.supportsInterface(0x2a55205b));
     }
 }
