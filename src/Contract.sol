@@ -20,7 +20,7 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
      * @param receivers addresses of receivers. `receivers[i]` receives the token `_startId+i`.
      * @dev the tokenId to transfer can overflow, but it has to be a impractical high number.
      */
-    function transferToMultiple(uint256 _startId, address[] calldata receivers) external {
+    function transferToMultiple(uint256 _startId, address[] calldata receivers) external onlyOwner {
         unchecked {
             for (uint i; i<receivers.length; ++i) {
                 transferFrom(msg.sender, receivers[i], _startId+i);
