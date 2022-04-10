@@ -50,7 +50,7 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
      * @return recipient address that should receive the royalty.
      * @return royalty amount from `salePrice` that `recipient` should receive.
      */
-    function royaltyInfo(uint256 /* tokenId */, uint256 salePrice) // TODO: check if ERC165 support is needed
+    function royaltyInfo(uint256 /* tokenId */, uint256 salePrice)
         external
         view
         returns (address, uint256) {
