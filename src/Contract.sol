@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
 import {ERC721A, URIQueryForNonexistentToken, Strings, IERC165} from "erc721a/contracts/ERC721A.sol";
@@ -8,6 +8,10 @@ import {IERC2981} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 contract Collectors is ERC721A, Ownable, IERC2981 {
     using Strings for uint256;
+
+    error BreachingMintLimit();
+
+    uint256 constant MAX_TOKENS = 100;
 
     string private _baseTokenURI;
     address public royaltyRecipient = 0x76cE6D8e24089589AF07474ef9378C1214e6dCB7;
@@ -24,6 +28,10 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
      * @param quantity number of tokens to mint, all owned by the `owner`.
      */
     function mintBatch(uint256 quantity) external onlyOwner {
+        if (_currentIndex + quantity > MAX_TOKENS) {
+            revert BreachingMintLimit();
+        }
+
         _mint(msg.sender, quantity, "", false);
     }
 

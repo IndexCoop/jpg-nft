@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
 import "ds-test/test.sol";
@@ -37,7 +37,7 @@ contract ContractTest is DSTest {
         assertEq(coll.totalSupply(), 0);
     }
 
-    function testMint() public {
+    function testMintSuccess() public {
         coll.mintBatch(1);
         assertEq(coll.tokenURI(0), "");
         assertEq(coll.totalSupply(), 1);
@@ -57,6 +57,25 @@ contract ContractTest is DSTest {
         coll.tokenURI(51);
     }
 
+    function testMaxMints() public {
+        cheats.expectRevert(abi.encodeWithSelector(Collectors.BreachingMintLimit.selector));
+        coll.mintBatch(101);
+
+        coll.mintBatch(100);
+        coll.setBaseURI(_baseURI);
+        assertEq(coll.tokenURI(99), "ipfs://QmPwu1Z6WVckrCiRcAoXr4AL5SVMivJVUfHw7qqSNUtYRa/99.json");
+
+        cheats.expectRevert(abi.encodeWithSelector(Collectors.BreachingMintLimit.selector));
+        coll.mintBatch(1);
+
+        // reset the mints
+        setUp();
+
+        coll.mintBatch(50);
+        cheats.expectRevert(abi.encodeWithSelector(Collectors.BreachingMintLimit.selector));
+        coll.mintBatch(51);
+    }
+
     function testTransferOwnership() public {
         assertEq(coll.owner(), address(this));
         address newOwner = generateAddress("newOwner");
@@ -72,7 +91,7 @@ contract ContractTest is DSTest {
         coll.transferOwnership(address(this));
 
         cheats.startPrank(newOwner);
-        testMint();
+        testMintSuccess();
         cheats.stopPrank();
     }
 
