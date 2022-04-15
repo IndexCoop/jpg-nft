@@ -10,8 +10,26 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
     using Strings for uint256;
 
     string private _baseTokenURI;
+    address public royaltyRecipient = 0x76cE6D8e24089589AF07474ef9378C1214e6dCB7;
 
     constructor() ERC721A("Collectooors", "COLLECTOOORS") {}
+
+    ///////// ONLY OWNER FUNCTIONS ////////
+    function setBaseURI(string calldata baseURI) external onlyOwner {
+        _baseTokenURI = baseURI;
+    }
+
+    /**
+     * @notice no `safeMint` allowed implying it doesn't call `onERC721Received` on the minter.
+     * @param quantity number of tokens to mint, all owned by the `owner`.
+     */
+    function mintBatch(uint256 quantity) external onlyOwner {
+        _mint(msg.sender, quantity, "", false);
+    }
+
+    function setRoyaltyRecipient(address _addr) external onlyOwner {
+        royaltyRecipient = _addr;
+    }
 
     /**
      * @notice transfer tokens starting from `_startIndex` to addresses in `receivers`.
@@ -28,19 +46,6 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
         }
     }
 
-    ///////// ONLY OWNER FUNCTIONS ////////
-    function setBaseURI(string calldata baseURI) external onlyOwner {
-        _baseTokenURI = baseURI;
-    }
-
-    /**
-     * @notice no `safeMint` allowed implying it doesn't call `onERC721Received` on the minter.
-     * @param quantity number of tokens to mint, all owned by the `owner`.
-     */
-    function mintBatch(uint256 quantity) external onlyOwner {
-        _mint(msg.sender, quantity, "", false);
-    }
-
     ///////// VIEW FUNCTIONS ///////////
 
     /**
@@ -55,8 +60,8 @@ contract Collectors is ERC721A, Ownable, IERC2981 {
         view
         returns (address, uint256) {
 
-        uint256 royaltyAmount = salePrice * 5e16 / 1e18; // 5% royalty
-        return (owner(), royaltyAmount);
+        uint256 royaltyAmount = salePrice * 500 / 10000; // 5% royalty
+        return (royaltyRecipient, royaltyAmount);
     }
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {

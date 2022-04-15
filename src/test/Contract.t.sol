@@ -108,8 +108,8 @@ contract ContractTest is DSTest {
     function testRoyalty() public {
         assertTrue(coll.supportsInterface(_INTERFACE_ID_ERC2981));
 
-        (address owner, uint256 cut) = coll.royaltyInfo(0, 100);
-        assertEq(coll.owner(), owner);
+        (address receiver, uint256 cut) = coll.royaltyInfo(0, 100);
+        assertEq(coll.royaltyRecipient(), receiver);
         assertEq(5, cut);
 
         (, cut) = coll.royaltyInfo(0, 101);
@@ -117,6 +117,15 @@ contract ContractTest is DSTest {
 
         (, cut) = coll.royaltyInfo(0, 1e18);
         assertEq(5e16, cut);
+    }
+
+    function testRoyaltyRecipient() public {
+        address newReceiver = 0x1111111111111111111111111111111111111111;
+        coll.setRoyaltyRecipient(newReceiver);
+
+        assertEq(coll.royaltyRecipient(), newReceiver);
+
+        testRoyalty();
     }
 
     function testSupportInterface() public {
